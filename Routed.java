@@ -12,8 +12,8 @@ class Routed
 {
 
   private DijkstraEngine m_engine = null;
-  private List m_nodeList = null; // list of nodes in this network
-  private Map m_forwardingTable = null;
+  private List<Node> m_nodeList = null; // list of nodes in this network
+  private Map<Node, List> m_forwardingTable = null;
   private Node m_me = null; // Who am I?
   private DatagramSocket m_socket = null;
 
@@ -22,7 +22,7 @@ class Routed
     m_me = self;
     m_nodeList = nodelist;
     m_engine = new DijkstraEngine(map);
-    m_forwardingTable = new HashMap();
+    m_forwardingTable = new HashMap<Node, List>();
     // Run Dijkstra's Algorithm and determine my forwarding table
     populateForwardingTable();
     printForwardingTable();
@@ -53,8 +53,24 @@ class Routed
   public Node lookupForwardingTable(char destination)
   {
     // to be completed by students
-    //TODO: this.
-    return null;
+    //TODO: this. Idea: loop through each key, and pick the one that matches
+    //the destination. Then, return the first value in the list (closest node)
+    Node send_to = null;
+    Node dest = Node.valueOf(destination);
+    System.out.println("Looking up destination " + destination);
+    if(m_me.equals(dest))
+    {
+      return m_me;
+    }
+    for(Node key : m_forwardingTable.keySet())
+    {
+      if(key.equals(dest))
+      {
+        List<Node> l = m_forwardingTable.get(key);
+        send_to = l.get(1);
+      }
+    }
+    return send_to;
   }
 
   public void runEventLoop()
@@ -137,8 +153,7 @@ class Routed
     byte[] payload = packet.toBytes();
     try
     {
-      DatagramPacket p =
-      new DatagramPacket(payload, payload.length, ip, port);
+      DatagramPacket p = new DatagramPacket(payload, payload.length, ip, port);
       m_socket.send(p);
     }
     catch(Exception e)
@@ -149,12 +164,27 @@ class Routed
 
   private void populateForwardingTable()
   {
+    //TODO: this.
     // calculate shortest path
     m_engine.execute(m_me, null);
 
     // for every destination except myself, I should determine
     // the output link (i.e., to which of my direct neighbor
     // I should forward the message to for the destination)
+
+    //This is what the code here will do:
+    //for each node n:
+      //if n != self:
+        //m_forwardingTable = getShortestPathToNode(n)
+    for(int i = 0; i < m_nodeList.size(); i++)
+    {
+      Node destination = m_nodeList.get(i);
+      if(!destination.equals(m_me))
+      {
+        List route = getShortestPathToNode(destination);
+        m_forwardingTable.put(destination, route);
+      }
+    }
 
     // to be completed by students
   }
@@ -165,7 +195,7 @@ class Routed
   {
     List l = new ArrayList();
     for(Node c = n; c!= null; c = m_engine.getPredecessor(c))
-    l.add(c);
+      l.add(c);
     Collections.reverse(l);
     System.out.println("path from "+m_me+" to "+n+": "+l);
 
@@ -181,9 +211,9 @@ class Routed
     int alicePort = config.getAlicePort();
     int bobPort = config.getBobPort();
     if(alice.equals(m_me))
-    return alicePort;
+      return alicePort;
     else // set to Bob's port
-    return bobPort;
+      return bobPort;
   }
 
   public static void main(String args[]) throws Exception
@@ -193,9 +223,9 @@ class Routed
     DenseRoutesMap testMap = config.getRoutesMap();
     int nwsize = config.getNetworkSize();
 
-    List nlist = new ArrayList();
+    List<Node> nlist = new ArrayList<Node>();
     for(int i=0; i<nwsize; i++)
-    nlist.add(Node.valueOf(i));
+      nlist.add(Node.valueOf(i));
 
     Node myNode = null;
     try
