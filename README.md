@@ -7,3 +7,4 @@ Task list (in order of importance)
   - [DONE] Get a message from Alice to Bob
   - Test network with different topologies, and filetypes.
   - Get Bob to send a message back to Alice
+  - Measure echo latency
