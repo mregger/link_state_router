@@ -6,5 +6,5 @@ Task list (in order of importance)
   - [DONE] Write the Nodes class. Each class should be able to encode/decode messages the sam
   - [DONE] Get a message from Alice to Bob
   - Test network with different topologies, and filetypes.
-  - Get Bob to send a message back to Alice
+  - [DONE] Get Bob to send a message back to Alice
   - Measure echo latency
