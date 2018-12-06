@@ -62,7 +62,7 @@ public class Bob
       msgbytes[i] = packet.payload[i];
 
     message = new String(msgbytes);
-    System.out.println(message);
+    //System.out.println(message);
   }
 
   public void echoPacket(DatagramPacket packet)
@@ -82,7 +82,7 @@ public class Bob
     // attached to. We certainly could send to Bob's router,
     // but we will lose the opportunity to exercise routing!
     sendToNode(m_bob, p);
-    System.out.println("Echoed to Alice");
+    //System.out.println("Echoed to Alice");
   }
 
   private void sendToNode(Node n, Packet packet)

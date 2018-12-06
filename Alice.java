@@ -31,24 +31,39 @@ public class Alice
 
   public void run()
   {
-    Random gen = new Random();
-    Packet p = new Packet();
-    p.dest = m_bob.getName();
-    p.src = m_alice.getName();
-    p.seq = gen.nextInt(1000);
+    int count;
+    int MAX_PACKETS = 1000;
+    long time = 0;
+    System.out.print("Running latency test.");
+    for(count = 0; count < MAX_PACKETS; count++)
+    {
+      long startTime = System.nanoTime();
+      Random gen = new Random();
+      Packet p = new Packet();
+      p.dest = m_bob.getName();
+      p.src = m_alice.getName();
+      p.seq = gen.nextInt(1000);
 
-    String msg = "Hello World";
-    p.length = msg.length();
-    p.payload = "Hello World".getBytes();
+      String msg = "Hello World";
+      p.length = msg.length();
+      p.payload = "Hello World".getBytes();
 
-    // Note that we are sending the packet to the router
-    // that Alice is attached to, not the one that Bob is
-    // attached to. We certainly could send to Bob's router,
-    // but we will lose the opportunity to exercise routing!
-    sendToNode(m_alice, p);
-    System.out.println("Sent to Bob: "+msg);
-    System.out.println("Waiting for echo...");
-    runEventLoop();
+      // Note that we are sending the packet to the router
+      // that Alice is attached to, not the one that Bob is
+      // attached to. We certainly could send to Bob's router,
+      // but we will lose the opportunity to exercise routing!
+      sendToNode(m_alice, p);
+      //System.out.println("Sent to Bob: "+msg);
+      //System.out.println("Waiting for echo...");
+      if(count % 100 == 0)
+      {
+        System.out.print(".");
+      }
+      runEventLoop();
+      time += System.nanoTime() - startTime;
+    }
+    System.out.println(" done.");
+    System.out.println("Latency = "+(double)time/(count * 1000000 * 2));
   }
 
   private void sendToNode(Node n, Packet packet)
@@ -111,7 +126,7 @@ public class Alice
     for(int i=0; i<msglen; i++)
       msgbytes[i] = packet.payload[i];
 
-    System.out.println(new String(msgbytes));
+    //System.out.println(new String(msgbytes));
   }
 
   public static void main(String argsp[]) throws Exception
